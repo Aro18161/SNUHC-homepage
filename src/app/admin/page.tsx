@@ -23,7 +23,7 @@ const MEMBER_ROLES: MemberRole[] = [
 ];
 
 const ROLE_LABELS: Record<MemberRole, string> = {
-  director: 'Director (지도교수)',
+  director: 'Advisory Professor (지도교수)',
   mentor: 'Mentor (멘토)',
   executive: 'Executive (임원진)',
   manipulation: 'Manipulation',

@@ -7,26 +7,38 @@ import { MemberRole } from '@/lib/types';
 import { User } from 'lucide-react';
 
 const ROLE_CONFIG: Record<MemberRole, { labelKo: string; labelEn: string; color: string; bg: string }> = {
-  director: { labelKo: '지도교수', labelEn: 'Director', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
-  mentor: { labelKo: '멘토', labelEn: 'Mentor', color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
-  executive: { labelKo: '임원진', labelEn: 'Executive', color: '#6366f1', bg: 'rgba(99,102,241,0.12)' },
-  manipulation: { labelKo: 'Manipulation', labelEn: 'Manipulation', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
-  navigation: { labelKo: 'Navigation', labelEn: 'Navigation', color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
-  reasoning: { labelKo: 'Reasoning', labelEn: 'Reasoning', color: '#06b6d4', bg: 'rgba(6,182,212,0.12)' },
-  perception: { labelKo: 'Perception', labelEn: 'Perception', color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
-  alumni: { labelKo: '졸업생', labelEn: 'Alumni', color: '#64748b', bg: 'rgba(100,116,139,0.12)' },
+  executive:   { labelKo: '임원진',          labelEn: 'Executive',          color: '#6366f1', bg: 'rgba(99,102,241,0.12)' },
+  manipulation:{ labelKo: 'Manipulation',    labelEn: 'Manipulation',       color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+  navigation:  { labelKo: 'Navigation',      labelEn: 'Navigation',         color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+  reasoning:   { labelKo: 'Reasoning',       labelEn: 'Reasoning',          color: '#06b6d4', bg: 'rgba(6,182,212,0.12)' },
+  perception:  { labelKo: 'Perception',      labelEn: 'Perception',         color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
+  director:    { labelKo: '지도교수',         labelEn: 'Advisory Professor', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
+  mentor:      { labelKo: '멘토',             labelEn: 'Mentor',             color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
+  alumni:      { labelKo: '졸업생',           labelEn: 'Alumni',             color: '#64748b', bg: 'rgba(100,116,139,0.12)' },
+};
+
+// 전체 탭에서 보여줄 순서: 임원 → 팀원(4개) → 교수 → 멘토 → 졸업생
+const ROLE_ORDER: Record<MemberRole, number> = {
+  executive:    1,
+  manipulation: 2,
+  navigation:   3,
+  reasoning:    4,
+  perception:   5,
+  director:     6,
+  mentor:       7,
+  alumni:       8,
 };
 
 const TABS: { key: MemberRole | 'all'; labelKo: string; labelEn: string }[] = [
-  { key: 'all', labelKo: '전체', labelEn: 'All' },
-  { key: 'director', labelKo: '지도교수', labelEn: 'Director' },
-  { key: 'mentor', labelKo: '멘토', labelEn: 'Mentors' },
-  { key: 'executive', labelKo: '임원진', labelEn: 'Executives' },
+  { key: 'all',          labelKo: '전체',         labelEn: 'All' },
+  { key: 'executive',    labelKo: '임원진',        labelEn: 'Executives' },
   { key: 'manipulation', labelKo: 'Manipulation', labelEn: 'Manipulation' },
-  { key: 'navigation', labelKo: 'Navigation', labelEn: 'Navigation' },
-  { key: 'reasoning', labelKo: 'Reasoning', labelEn: 'Reasoning' },
-  { key: 'perception', labelKo: 'Perception', labelEn: 'Perception' },
-  { key: 'alumni', labelKo: '졸업생', labelEn: 'Alumni' },
+  { key: 'navigation',   labelKo: 'Navigation',   labelEn: 'Navigation' },
+  { key: 'reasoning',    labelKo: 'Reasoning',    labelEn: 'Reasoning' },
+  { key: 'perception',   labelKo: 'Perception',   labelEn: 'Perception' },
+  { key: 'director',     labelKo: '지도교수',      labelEn: 'Advisory Professor' },
+  { key: 'mentor',       labelKo: '멘토',          labelEn: 'Mentors' },
+  { key: 'alumni',       labelKo: '졸업생',        labelEn: 'Alumni' },
 ];
 
 const AVATAR_COLORS = [
@@ -43,7 +55,11 @@ export default function Team() {
   const [activeTab, setActiveTab] = useState<MemberRole | 'all'>('all');
 
   const filtered = activeTab === 'all'
-    ? data.members
+    ? [...data.members].sort(
+        (a, b) =>
+          (ROLE_ORDER[a.role] ?? 99) - (ROLE_ORDER[b.role] ?? 99) ||
+          (a.order ?? 0) - (b.order ?? 0)
+      )
     : data.members.filter((m) => m.role === activeTab);
 
   return (
